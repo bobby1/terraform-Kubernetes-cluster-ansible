@@ -1,0 +1,17 @@
+[controllers]
+controller-0    ansible_host=${controller-0-public-ip}    private_ip=${controller-0-private-ip}     private_dns=${controller-0-private-dns}
+controller-1    ansible_host=${controller-1-public-ip}    private_ip=${controller-1-private-ip}     private_dns=${controller-1-private-dns}
+
+[controllers:vars]
+ansible_connection=ssh
+ansible_user=ubuntu
+ansible_ssh_private_key_file=${ssh-private-key}
+
+[workers]
+worker-0    ansible_host=${worker-0-public-ip}      private_ip=${worker-0-private-ip}   private_dns=${worker-0-private-dns}
+worker-1    ansible_host=${worker-1-public-ip}      private_ip=${worker-1-private-ip}   private_dns=${worker-1-private-dns}
+
+[workers:vars]
+ansible_connection=ssh
+ansible_user=ubuntu
+ansible_ssh_private_key_file=${ssh-private-key}
