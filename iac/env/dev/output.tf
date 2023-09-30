@@ -14,10 +14,37 @@
 ### Developer: 		Bobby Wen, bobby@wen.org
 ### Creation date:	20230929_0957
 ###======================================================================================
+################################################################################
+# controller
+################################################################################
+output "controller_public_dns_name" {
+  description = "Public DNS name of the EC2 instance"
+  #   value       = module.aws_instance.ec2_instance[*].public_dns
+  value = module.ec2_instance[*].public_dns
+}
+
 output "controller_public_ip" {
   description = "Public IP address of the EC2 instance"
   #   value       = module.aws_instance.ec2_instance[*].public_ip
   value = module.ec2_instance[*].public_ip
+}
+
+output "controller_private_dns_name" {
+  description = "Public DNS name of the EC2 instance"
+  value       = module.ec2_instance[*].private_dns
+}
+
+output "controller_private_ip" {
+  description = "Public DNS name of the EC2 instance"
+  value       = module.ec2_instance[*].private_ip
+}
+
+################################################################################
+# worker
+################################################################################
+output "ec2_workers_public_dns_name" {
+  description = "Public DNS name of the EC2 instance"
+  value       = module.ec2_workers[*].public_dns
 }
 
 output "ec2_workers_public_ip" {
@@ -25,17 +52,10 @@ output "ec2_workers_public_ip" {
   value       = module.ec2_workers[*].public_ip
 }
 
-output "controller_public_dns_name" {
+output "ec2_workers_private_dns_name" {
   description = "Public DNS name of the EC2 instance"
-  #   value       = module.aws_instance.ec2_instance[*].public_dns
-  value = module.ec2_instance[*].public_dns
+  value       = module.ec2_workers[*].private_dns
 }
-
-output "ec2_workers_public_dns_name" {
-  description = "Public DNS name of the EC2 instance"
-  value       = module.ec2_workers[*].public_dns
-}
-
 output "ec2_workers_private_ip" {
   description = "Public DNS name of the EC2 instance"
   value       = module.ec2_workers[*].private_ip

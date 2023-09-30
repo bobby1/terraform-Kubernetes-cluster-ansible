@@ -21,8 +21,8 @@ resource "aws_default_vpc" "default" {
 }
 
 resource "aws_default_subnet" "default" {
-  count             = length(var.avz[var.aws_region])
-  availability_zone = var.avz[var.aws_region][count.index]
+  count             = length(var.availability_zone[var.region])
+  availability_zone = var.availability_zone[var.region][count.index]
 }
 
 resource "aws_security_group" "allow_ssh" {
@@ -42,17 +42,6 @@ resource "aws_security_group" "allow_ssh" {
     to_port          = 22
   }
 
-  ingress {
-    description      = "Cidr Blocks and ports for Ingress security"
-    cidr_blocks      = var.ingress_cidr_blocks[var.environment]
-    from_port        = 443
-    ipv6_cidr_blocks = []
-    prefix_list_ids  = []
-    protocol         = "tcp"
-    security_groups  = []
-    self             = false
-    to_port          = 443
-  }
   egress {
     description      = "Cidr Blocks and ports for Egress security"
     cidr_blocks      = var.egress_cidr_blocks[var.environment]
@@ -66,31 +55,42 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
-resource "aws_security_group" "allow_etcd" {
-  name        = "allow_etcd"
-  description = "Allow service traffic on port 2379 and 2380"
+resource "aws_security_group" "allow_private_traffic" {
+  description = "Allow private network traffic"
+  name        = "allow_private_network_traffic"
   vpc_id      = aws_default_vpc.default.id
 
   ingress {
-    description = "Port 2379"
-    from_port   = 2379
-    to_port     = 2380
-    protocol    = "tcp"
-    cidr_blocks = aws_default_subnet.default.*.cidr_block
+    description = "Cidr Blocks and ports for Ingress security"
+    cidr_blocks = var.ingress_cidr_blocks[var.environment]
+    # from_port        = 443
+    from_port        = 0
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    # protocol         = "tcp"
+    protocol        = "-1"
+    security_groups = []
+    self            = false
+    # to_port          = 443
+    to_port = 0
   }
 
   egress {
+    description      = "Cidr Blocks and ports for Egress security"
+    cidr_blocks      = var.egress_cidr_blocks[var.environment]
     from_port        = 0
-    to_port          = 0
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
     protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    security_groups  = []
+    self             = false
+    to_port          = 0
   }
 }
 
 resource "aws_key_pair" "deployer" {
-  key_name   = var.aws_key_name
-  public_key = var.aws_public_key
+  key_name   = var.key_name
+  public_key = var.public_key
   connection {
     type        = "ssh"
     host        = self.public_ip
@@ -100,43 +100,3 @@ resource "aws_key_pair" "deployer" {
   }
 }
 
-# resource "local_file" "inventory" {
-#   content = templatefile(
-#     # "${path.module}/templates/inventory.tftpl",
-#     "../../templates/inventory.tftpl",
-#     {
-#       #   controller-0-public-ip   = module.ec2_instance[0].public_ip,
-#       #   controller-0-public-ip   = module.ec2_instance[0].public_ip,
-#       #   controller-0-private-ip  = module.ec2_instance[0].private_ip,
-#       #   controller-0-private-dns = module.ec2_instance[0].private_dns,
-#       #   controller-1-public-ip   = module.ec2_instance[1].public_ip,
-#       #   controller-1-private-ip  = module.ec2_instance[1].private_ip,
-#       #   controller-1-private-dns = module.ec2_instance[1].private_dns,
-
-#       #   controller-0-public-ip   = aws_instance.ec2_instance[0].public_ip,
-#       #   controller-0-public-ip   = aws_instance.ec2_instance[0].public_ip,
-#       #   controller-0-private-ip  = aws_instance.ec2_instance[0].private_ip,
-#       #   controller-0-private-dns = aws_instance.ec2_instance[0].private_dns,
-#       #   controller-1-public-ip   = aws_instance.ec2_instance[1].public_ip,
-#       #   controller-1-private-ip  = aws_instance.ec2_instance[1].private_ip,
-#       #   controller-1-private-dns = aws_instance.ec2_instance[1].private_dns,
-
-#       controller-0-public-ip   = module.aws_instance.ec2_instance[0].public_ip,
-#       controller-0-public-ip   = module.aws_instance.ec2_instance[0].private_ip,
-#       controller-0-private-dns = module.aws_instance.ec2_instance[0].private_dns,
-#       controller-1-public-ip   = module.aws_instance.ec2_instance[1].public_ip,
-#       controller-1-private-ip  = module.aws_instance.ec2_instance[1].private_ip,
-#       controller-1-private-dns = module.aws_instance.ec2_instance[1].private_dns,
-
-
-#       worker-0-public-ip   = module.ec2_workers[0].public_ip,
-#       worker-0-private-ip  = module.ec2_workers[0].private_ip,
-#       worker-0-private-dns = module.ec2_workers[0].private_dns,
-#       worker-1-public-ip   = module.ec2_workers[1].public_ip,
-#       worker-1-private-ip  = module.ec2_workers[1].private_ip,
-#       worker-1-private-dns = module.ec2_workers[1].private_dns,
-#       ssh-private-key      = file("../test_rsa.pem")
-#     }
-#   )
-#   filename = "${path.module}/../ansible/inventory"
-# }

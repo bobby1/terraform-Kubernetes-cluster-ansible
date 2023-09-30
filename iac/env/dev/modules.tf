@@ -17,30 +17,33 @@
 module "ec2_instance" {
   ###   description            = "EC2 instance"
   source                      = "terraform-aws-modules/ec2-instance/aws"
-  ami                         = var.aws_instance_id[var.aws_region]
+  ami                         = var.aws_instance_id[var.region]
   associate_public_ip_address = true
   count                       = 2 ### two controllers are needed for HA
-  instance_type               = var.aws_instance_type[var.environment]
-  key_name                    = var.aws_key_name
+  instance_type               = var.instance_type[var.environment]
+  key_name                    = var.key_name
   monitoring                  = true
   name                        = "controller-${count.index}"
   subnet_id                   = aws_default_subnet.default[count.index].id
   tags = {
+    Terraform   = "true"
     project     = var.project_name
     environment = var.environment
     name        = var.instance_name
   }
-  vpc_security_group_ids = [aws_security_group.allow_etcd.id, aws_security_group.allow_ssh.id]
+  # vpc_security_group_ids = [aws_security_group.allow_etcd.id, aws_security_group.allow_ssh.id]
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 }
 
 module "ec2_workers" {
   ### description                = "EC2 instance of workers"
-  source                      = "terraform-aws-modules/ec2-instance/aws"
-  ami                         = var.aws_instance_id[var.aws_region]
-  associate_public_ip_address = true
+  source = "terraform-aws-modules/ec2-instance/aws"
+  ami    = var.aws_instance_id[var.region]
+  # associate_public_ip_address = true
+  associate_public_ip_address = false
   count                       = var.instance_count[var.environment]
-  instance_type               = var.aws_instance_type[var.environment]
-  key_name                    = var.aws_key_name
+  instance_type               = var.instance_type[var.environment]
+  key_name                    = var.key_name
   monitoring                  = true
   name                        = "worker-${count.index}"
   subnet_id                   = aws_default_subnet.default[count.index].id
@@ -49,5 +52,6 @@ module "ec2_workers" {
     environment = var.environment
     name        = var.instance_name
   }
-  vpc_security_group_ids = [aws_security_group.allow_etcd.id, aws_security_group.allow_ssh.id]
+  # vpc_security_group_ids = [aws_security_group.allow_https.id, aws_security_group.allow_ssh.id]
+  vpc_security_group_ids = [aws_security_group.allow_private_traffic.id]
 }
