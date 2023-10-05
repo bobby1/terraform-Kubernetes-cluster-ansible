@@ -30,12 +30,14 @@ variable "project_name" {
 variable "region" {
   description = "AWS region for deployment"
   type        = string
-  default     = "us-west-1"
+  default     = "us-east-1"
 }
 
 ################################################################################
 # Instance configuration
 ################################################################################
+
+
 variable "availability_zone" {
   description = "aws availability zones"
   type        = map(list(string))
@@ -78,7 +80,8 @@ variable "instance_type" {
   description = "EC2 instance type"
   type        = map(string)
   default = {
-    dev = "t2.micro"
+    # dev = "t2.micro"  ### DEBUG  t2.micro is too small for k8s
+    dev = "t2.medium"
     stg = "t2.medium"
     prd = "t2.large"
   }
@@ -93,7 +96,6 @@ variable "key_name" {
 variable "public_key" {
   description = "pre-configured public key to use in instance"
   type        = string
-  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDgS5WqlNu2AojxJE/9c8BmhlZIc8EXz0qszhp6kzsaVVkkGK3Gl6o1DtQrrlyoolkc3Zrgw1jPI91n/wz69p4Yz6ND8HCGdz/VCdhCJfv6cW330B2IiWc8emQJ3We6gZhjzZAegAQh2DsLWGJlXGFySk6Y3LFxsdovrFwHlWK6jZ5kYOETSq5wugDKQVf4RSbVhh2/rnmKO/ur+lo31+Crqx2d8oV0KQcItLG8iR1aX0NJTWxGGBHxVSxQIVz9WXWUlclz3Og7oAXjzKTs70geyqYsowGHLWL+ruIrT4tIqVyTDySl+Aaas6hdx7+rGs2qKZgQoS1dZqXRKw/smALSAeUoYqcg98ZfSP48LLDa+IZaCGzqvwq+xJg9OUEivrwsikfxMP/ZjCLrFuspNH5v1XEcyGQXDpQkfrQRoGLiVvsymGiXcOHcMrML/fRtLXzy7lk+bf6a6eC+wiLKDikYcvVipszFCFYzN3PqOdcRVY18u6c4IvNG+Vy0wjmHR70= bobby@wen.org"
   sensitive   = true
 }
 
@@ -105,9 +107,11 @@ variable "ingress_cidr_blocks" {
   type        = map(list(string))
   default = {
     ### 67.174.209.57/32 is an access IP address   ### DEBUG
-    dev = ["67.174.209.57/32", "172.31.0.0/16", ]
+    ### 172.31.0.0/16 is aws local network   ### DEBUG
+    ### 10.32.0.0/24 is k8s cluster network   ### DEBUG
+    dev = ["67.174.209.57/32", "172.31.0.0/16", "10.32.0.0/24", ]
     ### 52.250.42.0/24 is a company's IP address range  ### DEBUG
-    stg = ["52.250.42.0/24", "172.31.0.0/16", ]
+    stg = ["52.250.42.0/24", "172.31.0.0/16", "127.0.0.1/32", ]
     prd = ["0.0.0.0/0", ]
   }
 }
