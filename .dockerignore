@@ -1,0 +1,7 @@
+# This is just a comment.
+*.md
+!README.md
+# comment
+*/temp*
+*/*/temp*
+temp?
