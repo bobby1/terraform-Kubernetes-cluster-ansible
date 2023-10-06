@@ -1,4 +1,4 @@
-# Import play books for tasks
+# Import play books for tasks to be executed
 - name: Install Kubernetes Dependencies
   import_playbook: kube-dependencies.yml
 - name: Initialaize Kubernetes Master
