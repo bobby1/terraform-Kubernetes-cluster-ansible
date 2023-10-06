@@ -19,7 +19,7 @@ module "ec2_instance" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
   ami                         = var.aws_instance_id[var.region]
   associate_public_ip_address = true
-  count                       = 2 ### two controllers are needed for HA
+  count                       = 1 ### One Master controllers is recommended for 10 or less workers.  More than 10 workers, 3 controllers or odd increments are recommended
   instance_type               = var.instance_type[var.environment]
   key_name                    = var.key_name
   monitoring                  = true
@@ -37,16 +37,16 @@ module "ec2_instance" {
 
 module "ec2_workers" {
   ### description                = "EC2 instance of workers"
-  source = "terraform-aws-modules/ec2-instance/aws"
-  ami    = var.aws_instance_id[var.region]
-  # associate_public_ip_address = true
-  associate_public_ip_address = false
-  count                       = var.instance_count[var.environment]
-  instance_type               = var.instance_type[var.environment]
-  key_name                    = var.key_name
-  monitoring                  = true
-  name                        = "worker-${count.index}"
-  subnet_id                   = aws_default_subnet.default[count.index].id
+  source                      = "terraform-aws-modules/ec2-instance/aws"
+  ami                         = var.aws_instance_id[var.region]
+  associate_public_ip_address = true
+  # associate_public_ip_address = false
+  count         = var.instance_count[var.environment]
+  instance_type = var.instance_type[var.environment]
+  key_name      = var.key_name
+  monitoring    = true
+  name          = "worker-${count.index}"
+  subnet_id     = aws_default_subnet.default[count.index].id
   tags = {
     project     = var.project_name
     environment = var.environment
