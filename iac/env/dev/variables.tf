@@ -37,7 +37,6 @@ variable "region" {
 # Instance configuration
 ################################################################################
 
-
 variable "availability_zone" {
   description = "aws availability zones"
   type        = map(list(string))
@@ -59,12 +58,12 @@ variable "aws_instance_id" {
     us-west-2 = "ami-0c65adc9a5c1b5d7c"
   }
 }
+
 variable "instance_count" {
   description = "Number of instances to provision."
   type        = map(number)
   default = {
     dev = 2
-    # dev = 3 ### DEBUG
     stg = 4
     prd = 6
   }
@@ -93,12 +92,6 @@ variable "key_name" {
   default     = "aws_key"
 }
 
-variable "public_key" {
-  description = "pre-configured public key to use in instance"
-  type        = string
-  sensitive   = true
-}
-
 ################################################################################
 # network security
 ################################################################################
@@ -106,11 +99,11 @@ variable "ingress_cidr_blocks" {
   description = "CIDR blocks to allow in the security group"
   type        = map(list(string))
   default = {
-    ### 67.174.209.57/32 is an access IP address   ### DEBUG
+    ### IP for individual developer's remote address, 67.174.209.57/32 is an access IP address  ### DEBUG
     ### 172.31.0.0/16 is aws local network   ### DEBUG
     ### 10.32.0.0/24 is k8s cluster network   ### DEBUG
-    dev = ["67.174.209.57/32", "172.31.0.0/16", "10.32.0.0/24", ]
-    ### 52.250.42.0/24 is a company's IP address range  ### DEBUG
+    dev = ["98.207.22.120/32", "67.174.209.57/32", "172.31.0.0/16", "10.32.0.0/24", ]
+    ### example IPs for a company's testing evironement  ### DEBUG
     stg = ["52.250.42.0/24", "172.31.0.0/16", "127.0.0.1/32", ]
     prd = ["0.0.0.0/0", ]
   }

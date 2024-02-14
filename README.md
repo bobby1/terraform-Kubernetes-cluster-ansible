@@ -51,16 +51,16 @@ To use this code base, AWS cli, Terraform and Ansible are required to be install
 
   $ terraform plan  
 
-        $ terraform plan -out <filename>  is recommended but not required
+    $ terraform plan -out <filename>  is recommended but not required
 
   $ terraform apply
   
-        $ terraform apply <filename>  if -out was used
+    $ terraform apply <filename>  if -out was used
   
  Once the server instance is created, terraform will output the server’s name and IP.  You can retrieve this output at any time after creating the instances by running 
   
    $ terraform output
-  
+
 Once you have the new instance DNS name information, connect to each instance to ensure your connection and ssh keys work.
 
 for example:  
@@ -72,24 +72,30 @@ for example:
   ssh -o StrictHostKeyChecking=accept-new ubuntu@ec2-54-92-22-20.compute-1.amazonaws.com 
   to automatically accept the ssh key
 
+In this example, the controller node and worker nodes are automatically populated into a file in the ansible directory, aws_k8s_hosts rather than the /etc/ansible/hosts file for easier management.
+
 * To install applications and files on the new instances, using Ansible.
 
-  **   add the server instances to the ansible host list at/etc/ansible/hosts.  The example ansible host files use application grouping to install software.  The new instances should be under the awsTest test host groups.
+  ** Add the server instances to the ansible host list at/etc/ansible/hosts.  The example ansible host files use application grouping to install software.  The new instances should be under the awsTest test host groups.
 
-  ** go to the directory containing the Ansible playbook
+  ** Go to the directory containing the Ansible playbook
 
-     $ ansible-playbook playbook.yml
+     $ ansible-playbook -i aws_k8s_hosts site.yml
 
-     Ansible will output a log of the tasks.  In the example playbook, Ansible copies an application and configuration files to all new instances, and runs the application to install some new software.
+  Check the kubernetes cluster has been provisioned by sshing to the cluster controller and outputting the nodes
+    $ ssh ubuntu@<controller-ip or controller DNS public name>
+    $ kubectl get nodes
 
-  The application also creates a blank cookie as a local audit trail for the activity, and logs the event to syslog.
+        ubuntu@ip-172-31-21-90:~$ kubectl get nodes
+          NAME               STATUS   ROLES    AGE     VERSION
+          ip-172-31-21-90    Ready    master   2m38s   v1.18.3
+          ip-172-31-29-50    Ready    <none>   83s     v1.18.3
+          ip-172-31-47-250   Ready    <none>   83s     v1.18.3
 
-  To check for the application results, ssh to the server instance.  Change directory to /opt/csg_security_agent and inspect the date time of the agent_install_date file.  This will be zero length file.
-  
-  Alternatively, look in /var/log/syslog for an entry "ansible agent installation SUCCESSFUL" entry.  Logging to a central remote syslog server allows for tracking of the ansible events and date for audit purposes. 
+  Your Kubernetes cluster is ready to accept and deploy your container!
 
-If you no longer need the stack,  you can clean up the by using
-  $ terraform destroy -auto-approve
+If you no longer need the stack,  you can clean up by returning to the iac/env/dev directory and destroy the stack.
+  $ terraform destroy
 
 ## Roadmap
 

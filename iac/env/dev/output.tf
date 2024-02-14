@@ -19,14 +19,12 @@
 ################################################################################
 output "controller_public_dns_name" {
   description = "Public DNS name of the EC2 instance"
-  #   value       = module.aws_instance.ec2_instance[*].public_dns
-  value = module.ec2_instance[*].public_dns
+  value       = module.ec2_instance[*].public_dns
 }
 
 output "controller_public_ip" {
   description = "Public IP address of the EC2 instance"
-  #   value       = module.aws_instance.ec2_instance[*].public_ip
-  value = module.ec2_instance[*].public_ip
+  value       = module.ec2_instance[*].public_ip
 }
 
 output "controller_private_dns_name" {

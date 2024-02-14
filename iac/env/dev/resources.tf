@@ -16,20 +16,6 @@
 ###======================================================================================
 data "aws_regions" "current" {}
 
-# data "aws_availability_zone" "availabile" {
-#   # # all_availability_zones = true
-#   # state = "availabile"
-#   # # id    = data.aws_regions.current
-#   # # id = var.region
-
-#   # filter {
-#   #   name = "opt-in-status"
-#   #   # values = ["not-opted-in", "opted-in"]
-#   #   # values = ["opted-in"]
-#   #   values = ["opt-in-not-required"]
-#   # }
-# }
-
 resource "aws_default_vpc" "default" {
   tags = {
     Name = "Default VPC"
@@ -39,18 +25,19 @@ resource "aws_default_vpc" "default" {
 resource "aws_default_subnet" "default" {
   count             = length(var.availability_zone[var.region])
   availability_zone = var.availability_zone[var.region][count.index]
-  # count             = length(data.aws_availability_zone.availabile)
-  # availability_zone = data.aws_availability_zone.availabile[count.index]
 }
 
 resource "aws_key_pair" "deployer" {
-  key_name   = var.key_name
-  public_key = var.public_key
+  key_name = var.key_name
+  ### There are many ways of securing secret information, including using a secrets.tfvars file, environmental variables and key management systems.  ### DEBUG
+  ### This example reads files outside of the code base, and the files are not checked in as part of the code.  ### DEBUG
+  ### This allow individual developers to use their own key pair.  ### DEBUG
+  public_key = file("../../../../../myaws_private_key.txt")
   connection {
     type        = "ssh"
     host        = self.public_ip
     user        = "ubuntu"
-    private_key = file("../../test_rsa.pem")
+    private_key = file("../../../../../test_rsa.pem")
     timeout     = "4m"
   }
 }
@@ -61,18 +48,15 @@ resource "aws_security_group" "allow_ssh" {
   vpc_id      = aws_default_vpc.default.id
 
   ingress {
-    description = "Cidr Blocks and ports for Ingress security"
-    cidr_blocks = var.ingress_cidr_blocks[var.environment]
-    # from_port        = 22
+    description      = "Cidr Blocks and ports for Ingress security"
+    cidr_blocks      = var.ingress_cidr_blocks[var.environment]
     from_port        = 0 ### DEBUG  ### Open all ports to test K8 cluster
     ipv6_cidr_blocks = []
     prefix_list_ids  = []
-    # protocol         = "tcp"
-    protocol        = -1
-    security_groups = []
-    self            = false
-    # to_port          = 22
-    to_port = 0 ### DEBUG  ### Open all ports to test K8 cluster
+    protocol         = -1
+    security_groups  = []
+    self             = false
+    to_port          = 0 ### DEBUG  ### Open all ports to test K8 cluster
   }
 
   egress {
@@ -129,11 +113,6 @@ resource "local_file" "inventory" {
       controller-0-public-dns  = module.ec2_instance[0].public_dns,
       controller-0-private-ip  = module.ec2_instance[0].private_ip,
       controller-0-private-dns = module.ec2_instance[0].private_dns,
-
-      # controller-1-public-ip   = module.ec2_instance[1].public_ip,
-      # controller-1-public-dns  = module.ec2_instance[1].public_dns,
-      # controller-1-private-ip  = module.ec2_instance[1].private_ip,
-      # controller-1-private-dns = module.ec2_instance[1].private_dns,
 
       worker-0-public-ip   = module.ec2_workers[0].public_ip,
       worker-0-private-ip  = module.ec2_workers[0].private_ip,

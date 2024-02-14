@@ -31,7 +31,7 @@ module "ec2_instance" {
     environment = var.environment
     name        = var.instance_name
   }
-  # vpc_security_group_ids = [aws_security_group.allow_etcd.id, aws_security_group.allow_ssh.id]
+
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 }
 
@@ -40,18 +40,17 @@ module "ec2_workers" {
   source                      = "terraform-aws-modules/ec2-instance/aws"
   ami                         = var.aws_instance_id[var.region]
   associate_public_ip_address = true
-  # associate_public_ip_address = false
-  count         = var.instance_count[var.environment]
-  instance_type = var.instance_type[var.environment]
-  key_name      = var.key_name
-  monitoring    = true
-  name          = "worker-${count.index}"
-  subnet_id     = aws_default_subnet.default[count.index].id
+  count                       = var.instance_count[var.environment]
+  instance_type               = var.instance_type[var.environment]
+  key_name                    = var.key_name
+  monitoring                  = true
+  name                        = "worker-${count.index}"
+  subnet_id                   = aws_default_subnet.default[count.index].id
   tags = {
     project     = var.project_name
     environment = var.environment
     name        = var.instance_name
   }
-  # vpc_security_group_ids = [aws_security_group.allow_https.id, aws_security_group.allow_ssh.id]
+
   vpc_security_group_ids = [aws_security_group.allow_private_traffic.id]
 }
