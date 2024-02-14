@@ -76,7 +76,7 @@ In this example, the controller node and worker nodes are automatically populate
 
 * To install applications and files on the new instances, using Ansible.
 
-  ** Go to the directory containing the Ansible directory
+  ** Go to the ansible directory
 
      $ ansible-playbook -i aws_k8s_hosts site.yml
 
