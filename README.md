@@ -76,8 +76,6 @@ In this example, the controller node and worker nodes are automatically populate
 
 * To install applications and files on the new instances, using Ansible.
 
-  ** Add the server instances to the ansible host list at/etc/ansible/hosts.  The example ansible host files use application grouping to install software.  The new instances should be under the awsTest test host groups.
-
   ** Go to the directory containing the Ansible playbook
 
      $ ansible-playbook -i aws_k8s_hosts site.yml
