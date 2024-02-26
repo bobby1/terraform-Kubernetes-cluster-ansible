@@ -1,26 +1,26 @@
 # terraform-kubernetes-cluster-ansible
-This code is a basic demonstration of ways to create Structured Design Life Cycle (SDLC) deployment cloud environments with minimum effort.  The code uses terraform to create Amazon Web Services (AWS) instances.  And, Ansible is used to push basic tools and configuration to the new server instances and install a security agent.
+This code is a basic demonstration of ways to create Structured Design Life Cycle (SDLC) deployment cloud environments with minimum effort.  The code uses Terraform to create Amazon Web Services (AWS) instances. Ansible is used to push basic tools and configuration to the new server instances and install a security agent.
 
-This code extends the terraform-with-ansible github repository (https://github.com/bobby1/terraform-with-ansible) to add a kubenetes cluster with two controllers and worker nodes.
+This code extends the terraform-with-ansible GitHub repository (https://github.com/bobby1/terraform-with-ansible) to add a Kubernetes cluster with two controllers and worker nodes.
 
 ## Design Principles
-* Reusable code: The same code base is used for all environment; implementation differences are set based on the environment or tier for the SDLC.
+* Reusable code: The same code base is used for all environments; implementation differences are set based on the environment or tier for the SDLC.
 * SDLC from the start: Development (dev), Staging (stg) and Production (prd) folders are available to allow checkout of the code to implement a project using all basic tiers at the beginning of a project.
-* Scalable:  the environment setting allows each environment to scale automatically.  Development environment use micro server instance (t2.micro) to service a small number of developers, staging environments uses medium server instances (t2.medium) to allow a large audience to test the application.  Production environments uses large server instances (t2.large) to be generally available to the Internet.
+* Scalable:  the environment setting allows each environment to scale automatically.  Development environments use micro server instances (t2.micro) to service a small number of developers, and staging environments use medium server instances (t2.medium) to allow a large audience to test the application.  Production environments use large server instances (t2.large) to be generally available to the Internet.
 
   ** In the same manner, dev environments will create two server instances.  Stg environments will create four server instances.  And Prd environments will create six server instances automatically
 
   ** This is an alternative to terraform workspace and does not require workspace setup
 
-* Secure: The code show examples of how to secure user account and application accessibility based on environments.
+* Secure: The code shows examples of how to secure user accounts and application accessibility based on environments.
   
   ** Secure Shell Protocol (SSH) keys can be pre-configured and installed on the server to allow secure sessions with the all the server instances.
   
   ** Access to the server instances is limited based on the environment.  Dev can be configured to only allow developer access.  Stg can be configured to only allow corporate user access.  Prd can be configured to allow general Internet access.
 
-* Flexible: The code can be customized for individual environments, based on your application needs, for example.  the AWS Machine Images (ami) for each region can be preconfigure, without the need to have project specify them for every region. Additional configuration parameters are already in the code to allow for easy customization.  
+* Flexible: The code can be customized for individual environments, based on your application needs, for example.  the AWS Machine Images (ami) for each region can be preconfigured, without the need to have the project specify them for every region. Additional configuration parameters are already in the code to allow for easy customization.  
   
-* Auditable: The code creates output and logging where possible.
+* Auditable: The code creates output and logs where possible.
   ** The public IP and DNS name for servers’ instances created are output in Terraform to allow easy access to the new instance
 
   ** Scripts on servers create a local trail of activity as well as log to the syslog or remote syslogger.
@@ -29,15 +29,15 @@ This code extends the terraform-with-ansible github repository (https://github.c
 
 ## Pre-requisites
 
-To use this code base, AWS cli, Terraform and Ansible are required to be installed locally on the server.
+To use this code base, AWS CLI, Terraform and Ansible are required to be installed locally on the server.
 
-   * AWS cli access configuration (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+   * AWS CLI access configuration (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
   
    * Terraform by HashiCorp (https://www.terraform.io/)
   
    * Ansible (https://www.ansible.com/)
 
-   * An OpenSSH key-pair must be available to upload to the new environment (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/openssh.html)
+   * An OpenSSH key pair must be available to upload to the new environment (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/openssh.html)
 
 ## How to use
 
@@ -80,7 +80,7 @@ In this example, the controller node and worker nodes are automatically populate
 
      $ ansible-playbook -i aws_k8s_hosts site.yml
 
-  Check the kubernetes cluster has been provisioned by sshing to the cluster controller and outputting the nodes
+  Check the Kubernetes cluster has been provisioned by sshing to the cluster controller and outputting the nodes
     $ ssh ubuntu@<controller-ip or controller DNS public name>
     $ kubectl get nodes
 
@@ -92,7 +92,7 @@ In this example, the controller node and worker nodes are automatically populate
 
   Your Kubernetes cluster is ready to accept and deploy your container!
 
-If you no longer need the stack,  you can clean up by returning to the iac/env/dev directory and destroy the stack.
+If you no longer need the stack,  you can clean up by returning to the iac/env/dev directory and destroying the stack.
   $ terraform destroy
 
 ## Roadmap
@@ -111,7 +111,7 @@ or
 
 ## Author
 
-Terraform-with-ansible was created by [Bobby Wen] (https://github.com/bobby1) as a primer to Terraform and ansible.
+Terraform-with-ansible was created by [Bobby Wen] (https://github.com/bobby1) as a primer to Terraform and Ansible.
 
 ## License
 
